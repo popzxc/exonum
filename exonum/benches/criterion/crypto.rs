@@ -16,11 +16,28 @@ use criterion::{AxisScale, Bencher, Criterion, ParameterizedBenchmark, PlotConfi
                 Throughput};
 use exonum::crypto::{gen_keypair, hash, sign, verify};
 use num::pow::pow;
+use exonum::events::noise::sodium_resolver::{SodiumBlake2s, SodiumSha256, Hash};
 
 fn bench_sign(b: &mut Bencher, &count: &usize) {
     let (_, secret_key) = gen_keypair();
     let data = (0..count).map(|x| (x % 255) as u8).collect::<Vec<u8>>();
     b.iter(|| sign(&data, &secret_key))
+}
+
+fn bench_sha256(b: &mut Bencher, &count: &usize) {
+    let mut hasher = SodiumSha256::default();
+    hasher.reset();
+
+    let data = (0..count).map(|x| (x % 255) as u8).collect::<Vec<u8>>();
+    b.iter(|| hasher.input(&data))
+}
+
+fn bench_blake2s(b: &mut Bencher, &count: &usize) {
+    let mut hasher = SodiumBlake2s::default();
+    hasher.reset();
+
+    let data = (0..count).map(|x| (x % 255) as u8).collect::<Vec<u8>>();
+    b.iter(|| hasher.input(&data))
 }
 
 fn bench_verify(b: &mut Bencher, &count: &usize) {
@@ -43,21 +60,36 @@ pub fn bench_crypto(c: &mut Criterion) {
     // 2^6 = 64 - is relatively small message, and our starting test point.
     // 2^16 = 65536 - is relatively big message, and our end point.
 
+    // c.bench(
+    //     "hash",
+    //     ParameterizedBenchmark::new("hash", bench_hash, (6..16).map(|i| pow(2, i)))
+    //         .throughput(|s| Throughput::Bytes(*s as u32))
+    //         .plot_config(PlotConfiguration::default().summary_scale(AxisScale::Logarithmic)),
+    // );
+    // c.bench(
+    //     "sign",
+    //     ParameterizedBenchmark::new("sign", bench_sign, (6..16).map(|i| pow(2, i)))
+    //         .throughput(|s| Throughput::Bytes(*s as u32))
+    //         .plot_config(PlotConfiguration::default().summary_scale(AxisScale::Logarithmic)),
+    // );
+    // c.bench(
+    //     "verify",
+    //     ParameterizedBenchmark::new("verify", bench_verify, (6..16).map(|i| pow(2, i)))
+    //         .throughput(|s| Throughput::Bytes(*s as u32))
+    //         .plot_config(PlotConfiguration::default().summary_scale(AxisScale::Logarithmic)),
+    // );
+
     c.bench(
-        "hash",
-        ParameterizedBenchmark::new("hash", bench_hash, (6..16).map(|i| pow(2, i)))
+        "sha256",
+        ParameterizedBenchmark::new("sha256", bench_sha256, (6..16).map(|i| pow(2, i)))
             .throughput(|s| Throughput::Bytes(*s as u32))
             .plot_config(PlotConfiguration::default().summary_scale(AxisScale::Logarithmic)),
     );
+
+
     c.bench(
-        "sign",
-        ParameterizedBenchmark::new("sign", bench_sign, (6..16).map(|i| pow(2, i)))
-            .throughput(|s| Throughput::Bytes(*s as u32))
-            .plot_config(PlotConfiguration::default().summary_scale(AxisScale::Logarithmic)),
-    );
-    c.bench(
-        "verify",
-        ParameterizedBenchmark::new("verify", bench_verify, (6..16).map(|i| pow(2, i)))
+        "blake2s",
+        ParameterizedBenchmark::new("blake2s", bench_blake2s, (6..16).map(|i| pow(2, i)))
             .throughput(|s| Throughput::Bytes(*s as u32))
             .plot_config(PlotConfiguration::default().summary_scale(AxisScale::Logarithmic)),
     );

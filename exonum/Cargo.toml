@@ -16,6 +16,7 @@ travis-ci = { repository = "exonum/exonum" }
 circle-ci = { repository = "exonum/exonum" }
 
 [dependencies]
+exonum_libsodium-sys = "0.0.17"
 log = "=0.4.1"
 byteorder = "1.1.0"
 hex = "=0.3.0"

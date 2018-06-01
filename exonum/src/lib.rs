@@ -17,7 +17,7 @@
 //! For more information see the project readme.
 // spell-checker:ignore cors
 
-#![deny(missing_debug_implementations, missing_docs, unsafe_code)]
+// #![deny(missing_debug_implementations, missing_docs, unsafe_code)]
 #![cfg_attr(feature = "flame_profile", feature(plugin, custom_attribute))]
 #![cfg_attr(feature = "flame_profile", plugin(exonum_flamer))]
 #![cfg_attr(feature = "long_benchmarks", feature(test))]
@@ -67,6 +67,7 @@ extern crate tokio_timer;
 extern crate toml;
 extern crate uuid;
 extern crate vec_map;
+extern crate libsodium_sys;
 
 // Test dependencies.
 #[cfg(test)]
@@ -91,6 +92,6 @@ pub mod blockchain;
 pub mod api;
 pub mod explorer;
 
-mod events;
+pub mod events;
 #[cfg(test)]
 mod sandbox;

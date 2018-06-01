@@ -20,6 +20,7 @@ extern crate futures;
 extern crate num;
 extern crate rand;
 extern crate tempdir;
+extern crate snow;
 
 use block::bench_block;
 use criterion::Criterion;
